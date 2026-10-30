@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MultiCoreX - Multithreading Visualizer & Performance Analysis System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Chart.js from local fallback or CDN -->
+  <script src="assets/js/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-badge">X</div>
+        <div class="logo-text">
+          <h1>MultiCoreX</h1>
+          <span>OS Threading Lab</span>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li class="nav-item active" data-target="view-dashboard">
+          <a href="#dashboard">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-visualizer">
+          <a href="#visualizer">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+            <span>Thread Visualizer</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-analyzer">
+          <a href="#analyzer">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>Performance Analyzer</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-race-lab">
+          <a href="#race-lab">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span>Race Condition Lab</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-mutex-demo">
+          <a href="#mutex-demo">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Mutex & Critical Sec</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-thread-pool">
+          <a href="#thread-pool">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            <span>Thread Pool Manager</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-learning">
+          <a href="#learning">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <span>Learning Center</span>
+          </a>
+        </li>
+        <li class="nav-item" data-target="view-about">
+          <a href="#about">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>About Project</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="connection-pill">
+          <div class="status-dot" id="server-status-dot"></div>
+          <span id="server-status-text">C++ Engine Online</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Viewport -->
+    <main class="main-viewport">
+      <header class="top-header">
+        <div class="view-heading">
+          <h2 id="current-view-title">Dashboard Overview</h2>
+          <p id="current-view-desc">Live system metrics, hardware execution statistics, and module navigator.</p>
+        </div>
+        <div class="header-badges">
+          <div class="badge-tag">
+            <span>CPU Logical Cores:</span>
+            <strong id="badge-hw-cores">--</strong>
+          </div>
+          <div class="badge-tag">
+            <span>Uptime:</span>
+            <strong id="badge-uptime">00:00:00</strong>
+          </div>
+        </div>
+      </header>
+
+      <div class="content-area">
+        
+        <!-- ==========================================
+             VIEW 1: DASHBOARD
+             ========================================== -->
+        <section id="view-dashboard" class="view-section active">
+          <!-- Metrics Row -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>Total Executions</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              </div>
+              <div class="metric-value" id="dash-total-tasks">0</div>
+              <div class="metric-sub">Across all computational modules</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>Active Worker Threads</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              </div>
+              <div class="metric-value">
+                <span id="dash-active-threads">0</span>
+                <span class="metric-unit">/ <span id="dash-total-workers">4</span></span>
+              </div>
+              <div class="metric-sub">Pool workers currently busy</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>Execution Time</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div class="metric-value">
+                <span id="dash-execution-time">0.0</span>
+                <span class="metric-unit">ms</span>
+              </div>
+              <div class="metric-sub">Total backend computation</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-header">
+                <span>Max Speedup Recorded</span>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div class="metric-value">
+                <span id="dash-best-speedup">1.0</span>
+                <span class="metric-unit">x</span>
+              </div>
+              <div class="metric-sub">Multithread vs Single-thread</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Charts -->
+          <div class="layout-2col">
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  <span>Quick Computational Benchmark</span>
+                </div>
+              </div>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
+                Trigger real C++ multi-thread task execution and immediately stream results into the dashboard.
+              </p>
+              <div class="form-group">
+                <label class="form-label">Task Type</label>
+                <select id="quick-bench-task" class="form-select">
+                  <option value="array_sum">Sum of Large Array (Reduction)</option>
+                  <option value="array_sort">Array Merge Sort</option>
+                  <option value="matrix_mult">Matrix Multiplication</option>
+                  <option value="prime_count">Prime Number Sieve</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Workload Scale</label>
+                <select id="quick-bench-size" class="form-select">
+                  <option value="small">Small (Fast)</option>
+                  <option value="medium" selected>Medium (Standard)</option>
+                  <option value="large">Large (Intense Multi-core)</option>
+                </select>
+              </div>
+              <button id="btn-quick-bench-run" class="btn btn-primary" style="width:100%;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                <span>Run Quick Comparison</span>
+              </button>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                  <span>Quick Performance Comparison</span>
+                </div>
+              </div>
+              <div style="height: 230px;">
+                <canvas id="dash-quick-chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Status Bar -->
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+                <span>Operating System & Concurrency Environment</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:2rem; flex-wrap:wrap; font-size:0.85rem; color:var(--text-muted);">
+              <div>Environment: <strong id="dash-env-os" style="color:var(--text-main);">Windows (MSVC C++17)</strong></div>
+              <div>Backend Process: <strong style="color:var(--text-main);">Native C++ std::thread Service</strong></div>
+              <div>IPC / Transport: <strong style="color:var(--text-main);">HTTP REST + JSON (cpp-httplib)</strong></div>
+              <div>Synchronization Primitives: <strong style="color:var(--text-main);">std::mutex, std::condition_variable, std::atomic</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 2: MODULE 1 - THREAD EXECUTION VISUALIZER
+             ========================================== -->
+        <section id="view-visualizer" class="view-section">
+          <div class="layout-2col">
+            <!-- Controls Panel -->
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                  <span>Workload Configuration</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Task Type</label>
+                <select id="vis-task-type" class="form-select">
+                  <option value="array_sum">Sum of Large Array (Parallel Reduction)</option>
+                  <option value="array_sort">Array Merge Sort</option>
+                  <option value="matrix_mult">Matrix Multiplication (Rows Blocked)</option>
+                  <option value="prime_count">Prime Number Calculation</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Number of Worker Threads</label>
+                <select id="vis-threads" class="form-select">
+                  <option value="1">1 Thread (Single-threaded)</option>
+                  <option value="2">2 Threads</option>
+                  <option value="4" selected>4 Threads</option>
+                  <option value="8">8 Threads</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Input Size Preset</label>
+                <select id="vis-input-size" class="form-select">
+                  <option value="small">Small Workload</option>
+                  <option value="medium" selected>Medium Workload</option>
+                  <option value="large">Large Workload</option>
+                </select>
+              </div>
+
+              <div class="btn-group" style="margin-top: 1.5rem;">
+                <button id="btn-vis-run" class="btn btn-primary" style="flex:1;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                  <span>Execute Task</span>
+                </button>
+                <button id="btn-vis-reset" class="btn btn-secondary">Reset</button>
+              </div>
+            </div>
+
+            <!-- Execution Status & Results Summary -->
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <span>Execution Telemetry</span>
+                </div>
+                <div id="vis-status-chip" class="thread-badge state-waiting">Ready</div>
+              </div>
+
+              <div class="stat-callout">
+                <div class="callout-box">
+                  <div class="callout-title">Wall-Clock Duration</div>
+                  <div class="callout-num"><span id="vis-time-ms">0.0</span> <span style="font-size:1rem;color:var(--text-muted);">ms</span></div>
+                </div>
+                <div class="callout-box">
+                  <div class="callout-title">Workload Elements</div>
+                  <div class="callout-num" id="vis-elements-count">0</div>
+                </div>
+                <div class="callout-box">
+                  <div class="callout-title">Correctness Status</div>
+                  <div class="callout-num" id="vis-correctness-status" style="font-size:1.4rem; color:var(--accent-green);">-</div>
+                </div>
+              </div>
+
+              <div id="vis-summary-text" style="font-size:0.85rem; color:var(--text-muted); padding:0.75rem; background:var(--bg-secondary); border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                Configure task parameters and press "Execute Task" to visualize thread distribution in real C++.
+              </div>
+            </div>
+          </div>
+
+          <!-- Thread Execution Lanes -->
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <span>Live Thread Execution Timeline & States</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-dim);">
+                States: Created &bull; Waiting &bull; Running &bull; Completed
+              </div>
+            </div>
+
+            <div id="vis-lanes-container" class="thread-lanes-container">
+              <!-- Dynamically populated thread lanes -->
+              <div style="text-align:center; padding:2rem; color:var(--text-dim);">
+                No task running. Select options and click "Execute Task".
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 3: MODULE 2 - PERFORMANCE ANALYZER
+             ========================================== -->
+        <section id="view-analyzer" class="view-section">
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>Multithread Performance Comparison Benchmarker</span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:1.5rem; flex-wrap:wrap; align-items:flex-end;">
+              <div class="form-group" style="margin-bottom:0; min-width:240px;">
+                <label class="form-label">Benchmark Task</label>
+                <select id="analyzer-task" class="form-select">
+                  <option value="matrix_mult">Matrix Multiplication (Compute Bound)</option>
+                  <option value="prime_count">Prime Number Sieve (CPU ALU Bound)</option>
+                  <option value="array_sort">Array Merge Sort (Memory & Branch Bound)</option>
+                  <option value="array_sum">Sum of Large Array (Memory Bandwidth Bound)</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0; min-width:180px;">
+                <label class="form-label">Data Scale</label>
+                <select id="analyzer-size" class="form-select">
+                  <option value="small">Small Dataset</option>
+                  <option value="medium" selected>Medium Dataset</option>
+                  <option value="large">Large Dataset (Intense)</option>
+                </select>
+              </div>
+
+              <button id="btn-analyzer-run" class="btn btn-primary" style="height:42px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Execute Benchmark [1, 2, 4, 8 Threads]</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Summary Metric Cards -->
+          <div class="stat-callout">
+            <div class="callout-box">
+              <div class="callout-title">1 Thread (Baseline)</div>
+              <div class="callout-num"><span id="perf-time-1t">--</span> <span style="font-size:1rem;color:var(--text-muted);">ms</span></div>
+            </div>
+            <div class="callout-box">
+              <div class="callout-title">4 Threads (Multi)</div>
+              <div class="callout-num"><span id="perf-time-4t">--</span> <span style="font-size:1rem;color:var(--text-muted);">ms</span></div>
+            </div>
+            <div class="callout-box">
+              <div class="callout-title">Speedup Factor</div>
+              <div class="callout-num" style="color:var(--accent-green);"><span id="perf-speedup">--</span> <span style="font-size:1rem;color:var(--text-muted);">x</span></div>
+            </div>
+            <div class="callout-box">
+              <div class="callout-title">Parallel Efficiency</div>
+              <div class="callout-num" style="color:var(--accent-purple);"><span id="perf-efficiency">--</span> <span style="font-size:1rem;color:var(--text-muted);">%</span></div>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div style="font-size:0.9rem; font-weight:600; margin-bottom:0.75rem;">Execution Time (ms) Across Thread Counts</div>
+              <div style="height:250px;"><canvas id="chart-exec-time"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <div style="font-size:0.9rem; font-weight:600; margin-bottom:0.75rem;">Speedup vs Ideal Linear Speedup (Amdahl's Law)</div>
+              <div style="height:250px;"><canvas id="chart-speedup"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Analysis & Amdahl's Law Box -->
+          <div class="panel" style="margin-top:1.5rem;">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Performance Insights & Amdahl's Law Breakdown</span>
+              </div>
+            </div>
+            <div id="analyzer-explanation-text" style="font-size:0.88rem; color:var(--text-muted); line-height:1.6;">
+              Run a comparison benchmark to generate quantitative insights regarding CPU cache limits, memory bus saturation, scheduling overhead, and theoretical parallel efficiency.
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 4: MODULE 3 - RACE CONDITION LAB
+             ========================================== -->
+        <section id="view-race-lab" class="view-section">
+          <div class="layout-2col">
+            <!-- Controls -->
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                  <span>Experiment Configuration</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Synchronization Mode</label>
+                <select id="race-mode" class="form-select">
+                  <option value="unsynchronized">Mode A: Unsynchronized (Data Race / Lost Updates)</option>
+                  <option value="mutex">Mode B1: std::mutex + std::lock_guard</option>
+                  <option value="atomic">Mode B2: std::atomic (Hardware Lock-Free)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Number of Competing Threads</label>
+                <select id="race-threads" class="form-select">
+                  <option value="2">2 Threads</option>
+                  <option value="4" selected>4 Threads</option>
+                  <option value="8">8 Threads</option>
+                  <option value="12">12 Threads</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Increments Per Thread</label>
+                <select id="race-iterations" class="form-select">
+                  <option value="25000">25,000 increments</option>
+                  <option value="50000">50,000 increments</option>
+                  <option value="100000" selected>100,000 increments</option>
+                  <option value="250000">250,000 increments</option>
+                </select>
+              </div>
+
+              <button id="btn-race-run" class="btn btn-primary" style="width:100%; margin-top:1rem;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Execute Race Condition Experiment</span>
+              </button>
+            </div>
+
+            <!-- Real-time Counters Display -->
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                  <span>Observed Counter Values</span>
+                </div>
+                <div id="race-method-tag" class="thread-badge state-created">None Selected</div>
+              </div>
+
+              <div class="race-results-container">
+                <div class="counter-display">
+                  <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Expected Total ($T \times K$)</div>
+                  <div class="counter-val success" id="race-expected-val">0</div>
+                  <div style="font-size:0.75rem; color:var(--text-dim);">Mathematically correct count</div>
+                </div>
+
+                <div class="counter-display">
+                  <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">Actual Measured Count</div>
+                  <div class="counter-val" id="race-actual-val">0</div>
+                  <div style="font-size:0.75rem; color:var(--text-dim);" id="race-discrepancy-sub">Discrepancy: 0</div>
+                </div>
+              </div>
+
+              <div class="stat-callout" style="margin-top:1rem; margin-bottom:0;">
+                <div class="callout-box">
+                  <div class="callout-title">Lost Updates</div>
+                  <div class="callout-num" id="race-lost-updates" style="color:var(--accent-red);">0</div>
+                </div>
+                <div class="callout-box">
+                  <div class="callout-title">Loss Percentage</div>
+                  <div class="callout-num" id="race-loss-pct" style="color:var(--accent-amber);">0.0%</div>
+                </div>
+                <div class="callout-box">
+                  <div class="callout-title">Execution Duration</div>
+                  <div class="callout-num"><span id="race-duration-ms">0.0</span> <span style="font-size:0.9rem; color:var(--text-muted);">ms</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deep Educational Insights & Assembly Breakdown -->
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <span>Hardware Assembly & Memory Vulnerability Insight</span>
+              </div>
+            </div>
+
+            <div id="race-explanation" class="race-explanation-box">
+              Select a synchronization mode and click "Execute Race Condition Experiment" to test.
+            </div>
+
+            <div id="race-assembly" class="assembly-box">
+Assembly breakdown will appear here after running an experiment.
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 5: MODULE 4 - MUTEX DEMONSTRATION
+             ========================================== -->
+        <section id="view-mutex-demo" class="view-section">
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <span>Mutual Exclusion & Lock Contention Chamber</span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:1.5rem; flex-wrap:wrap; align-items:flex-end;">
+              <div class="form-group" style="margin-bottom:0; min-width:180px;">
+                <label class="form-label">Threads Competing</label>
+                <select id="mutex-threads" class="form-select">
+                  <option value="2">2 Threads</option>
+                  <option value="3">3 Threads</option>
+                  <option value="4" selected>4 Threads</option>
+                  <option value="6">6 Threads</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0; min-width:180px;">
+                <label class="form-label">Critical Section Visits</label>
+                <select id="mutex-iterations" class="form-select">
+                  <option value="2">2 Visits per thread</option>
+                  <option value="3" selected>3 Visits per thread</option>
+                  <option value="4">4 Visits per thread</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0; min-width:200px;">
+                <label class="form-label">Hold Duration (ms)</label>
+                <select id="mutex-delay" class="form-select">
+                  <option value="20">20 ms (Low contention)</option>
+                  <option value="40" selected>40 ms (Medium contention)</option>
+                  <option value="80">80 ms (High contention)</option>
+                </select>
+              </div>
+
+              <button id="btn-mutex-run" class="btn btn-primary" style="height:42px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/></svg>
+                <span>Run Mutex Contention Test</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Visual Stage -->
+          <div class="mutex-stage">
+            <!-- Waiting Zone -->
+            <div class="queue-zone">
+              <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Waiting Threads Queue</span>
+              <div id="mutex-waiting-chips" class="threads-waiting-list">
+                <span class="thread-chip">Queue Empty</span>
+              </div>
+            </div>
+
+            <!-- Critical Section Zone -->
+            <div id="mutex-chamber" class="critical-section-zone">
+              <div id="mutex-lock-badge" class="lock-badge unlocked">LOCK: FREE</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; margin-bottom:0.25rem;">CRITICAL SECTION</div>
+              <div id="mutex-active-thread-text" style="font-size:1.1rem; font-weight:700; color:var(--text-main);">None Active</div>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">Shared Resource: <strong id="mutex-shared-val" style="color:var(--accent-cyan);">$100</strong></div>
+            </div>
+
+            <!-- Exit Zone -->
+            <div class="exit-zone">
+              <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Completed Events</span>
+              <div id="mutex-completed-count" style="font-size:2rem; font-weight:800; color:var(--accent-green);">0</div>
+            </div>
+          </div>
+
+          <!-- Contention Statistics -->
+          <div class="stat-callout">
+            <div class="callout-box">
+              <div class="callout-title">Total Duration</div>
+              <div class="callout-num"><span id="mutex-total-dur">0.0</span> <span style="font-size:1rem;color:var(--text-muted);">ms</span></div>
+            </div>
+            <div class="callout-box">
+              <div class="callout-title">Average Wait Time</div>
+              <div class="callout-num" style="color:var(--accent-amber);"><span id="mutex-avg-wait">0.0</span> <span style="font-size:1rem;color:var(--text-muted);">ms</span></div>
+            </div>
+            <div class="callout-box">
+              <div class="callout-title">Peak Lock Contention</div>
+              <div class="callout-num" style="color:var(--accent-red);"><span id="mutex-max-wait">0.0</span> <span style="font-size:1rem;color:var(--text-muted);">ms</span></div>
+            </div>
+          </div>
+
+          <!-- Timeline History -->
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                <span>Critical Section Lock Acquisition Timeline</span>
+              </div>
+            </div>
+            <div class="data-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Thread</th>
+                    <th>Lock Requested</th>
+                    <th>Lock Acquired</th>
+                    <th>Wait Duration</th>
+                    <th>Hold Duration</th>
+                    <th>State Transition</th>
+                  </tr>
+                </thead>
+                <tbody id="mutex-events-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align:center; color:var(--text-dim);">No simulation data. Press "Run Mutex Contention Test".</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 6: MODULE 5 - THREAD POOL MANAGER
+             ========================================== -->
+        <section id="view-thread-pool" class="view-section">
+          <!-- Pool Controls & Dispatcher -->
+          <div class="layout-2col">
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                  <span>Task Dispatcher</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Task Category</label>
+                <select id="pool-task-type" class="form-select">
+                  <option value="compute_pi">Compute Pi (Leibniz Series)</option>
+                  <option value="matrix_block">Matrix Block Mathematical Transform</option>
+                  <option value="prime_search">Prime Number Scan Range</option>
+                  <option value="general_io">General Asynchronous Task</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Batch Size (Number of Tasks)</label>
+                <select id="pool-batch-size" class="form-select">
+                  <option value="1">1 Task</option>
+                  <option value="5" selected>5 Tasks</option>
+                  <option value="10">10 Tasks</option>
+                  <option value="20">20 Tasks</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Execution Priority</label>
+                <select id="pool-task-priority" class="form-select">
+                  <option value="0">Normal Priority (0)</option>
+                  <option value="1">High Priority (1)</option>
+                  <option value="2">Urgent Priority (2)</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button id="btn-pool-submit" class="btn btn-primary" style="flex:1;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  <span>Submit to Pool</span>
+                </button>
+                <button id="btn-pool-reset" class="btn btn-secondary">Reset Stats</button>
+              </div>
+            </div>
+
+            <!-- Pool Sizing & Telemetry -->
+            <div class="panel">
+              <div class="panel-title">
+                <div class="panel-title-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
+                  <span>Pool Capacity & Worker Sizing</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Worker Thread Pool Count: <strong id="pool-workers-label" style="color:var(--accent-cyan);">4</strong></label>
+                <div style="display:flex; gap:1rem; align-items:center;">
+                  <input type="range" id="pool-size-slider" min="1" max="16" value="4" style="flex:1;">
+                  <button id="btn-pool-resize" class="btn btn-secondary" style="padding:0.5rem 1rem;">Apply Size</button>
+                </div>
+              </div>
+
+              <div class="stat-callout" style="margin-top:1rem; margin-bottom:0;">
+                <div class="callout-box">
+                  <div class="callout-title">Queue Backlog</div>
+                  <div class="callout-num" id="pool-queue-size" style="color:var(--accent-amber);">0</div>
+                </div>
+                <div class="callout-box">
+                  <div class="callout-title">Active Workers</div>
+                  <div class="callout-num" id="pool-busy-workers" style="color:var(--accent-cyan);">0</div>
+                </div>
+                <div class="callout-box">
+                  <div class="callout-title">Completed Tasks</div>
+                  <div class="callout-num" id="pool-completed-tasks" style="color:var(--accent-green);">0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Worker Threads Grid -->
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <span>Worker Threads Real-Time Status</span>
+              </div>
+            </div>
+            <div id="pool-workers-container" class="workers-grid">
+              <!-- Dynamically populated worker cards -->
+            </div>
+          </div>
+
+          <!-- Task Queue & History Table -->
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span>Task Queue & Execution Log</span>
+              </div>
+            </div>
+            <div class="data-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Task ID</th>
+                    <th>Task Name</th>
+                    <th>Category</th>
+                    <th>Priority</th>
+                    <th>Worker</th>
+                    <th>Status</th>
+                    <th>Duration</th>
+                    <th>Result / Output</th>
+                  </tr>
+                </thead>
+                <tbody id="pool-tasks-tbody">
+                  <tr>
+                    <td colspan="8" style="text-align:center; color:var(--text-dim);">No tasks processed yet. Submit tasks above.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 7: MODULE 6 - LEARNING CENTER
+             ========================================== -->
+        <section id="view-learning" class="view-section">
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Operating Systems: Multithreading & Concurrency Syllabus</span>
+              </div>
+            </div>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+              Comprehensive, clear conceptual foundation for Computer Engineering students covering thread lifecycles, memory architecture, mutual exclusion, and hardware execution models.
+            </p>
+          </div>
+
+          <!-- Concept Cards Grid -->
+          <div class="concept-cards-grid">
+            <div class="concept-card">
+              <h3>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <span>1. Process vs. Thread</span>
+              </h3>
+              <p>
+                A <strong>process</strong> is an independent program in execution with its own isolated virtual address space, file descriptors, and security context. A <strong>thread</strong> is the smallest schedulable unit of CPU execution within a process. Multiple threads share the process's code, data, and heap segments, but each thread has its own <em>Program Counter (PC)</em>, <em>Registers</em>, and <em>Call Stack</em>.
+              </p>
+            </div>
+
+            <div class="concept-card">
+              <h3>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>2. Concurrency vs. Parallelism</span>
+              </h3>
+              <p>
+                <strong>Concurrency</strong> is about dealing with multiple things at once (structure, time-slicing on 1 core). <strong>Parallelism</strong> is about doing multiple things at once simultaneously (execution across physical CPU cores). As Rob Pike noted: <em>"Concurrency is about program structure; parallelism is about execution."</em>
+              </p>
+            </div>
+
+            <div class="concept-card">
+              <h3>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span>3. Thread Lifecycle</span>
+              </h3>
+              <p>
+                A thread transitions through 5 primary OS states: <strong>New</strong> (created in memory), <strong>Ready</strong> (in OS run-queue waiting for CPU time), <strong>Running</strong> (executing instructions on a core), <strong>Waiting / Blocked</strong> (waiting for I/O or mutex lock), and <strong>Terminated</strong> (finished execution, resources reclaimed).
+              </p>
+            </div>
+
+            <div class="concept-card">
+              <h3>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>4. Race Conditions & Data Races</span>
+              </h3>
+              <p>
+                A <strong>race condition</strong> occurs when the output of a program depends on the non-deterministic interleaving or timing of thread executions. In C++, a <strong>data race</strong> occurs when two or more threads concurrently access the same memory location, at least one access is a write, and no synchronization is used. Under ISO C++, data races cause <em>Undefined Behavior (UB)</em>.
+              </p>
+            </div>
+
+            <div class="concept-card">
+              <h3>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <span>5. Mutex & Critical Section</span>
+              </h3>
+              <p>
+                A <strong>critical section</strong> is a code block accessing shared mutable resources. The <strong>Critical Section Problem</strong> requires three guarantees: <em>Mutual Exclusion</em> (only one thread at a time), <em>Progress</em> (selection of next entrant cannot be postponed indefinitely), and <em>Bounded Waiting</em> (no thread starves waiting for access).
+              </p>
+            </div>
+
+            <div class="concept-card">
+              <h3>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>6. Atomic Operations</span>
+              </h3>
+              <p>
+                <strong>Atomic operations</strong> (e.g., <code>std::atomic</code>) are executed as single, indivisible CPU instructions at the hardware bus level (such as <code>LOCK CMPXCHG</code> on x86). They eliminate lock overhead, avoid OS context switching, and guarantee thread safety without deadlocks.
+              </p>
+            </div>
+          </div>
+
+          <!-- Interactive Knowledge Check Quiz -->
+          <div class="quiz-container">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Interactive Knowledge Check Quiz</span>
+              </div>
+              <div style="font-size:0.85rem; color:var(--text-muted);">
+                Score: <strong id="quiz-score" style="color:var(--accent-cyan);">0</strong> / <span id="quiz-total">5</span>
+              </div>
+            </div>
+
+            <div id="quiz-questions-list">
+              <!-- Dynamically populated quiz questions -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             VIEW 8: ABOUT PROJECT
+             ========================================== -->
+        <section id="view-about" class="view-section">
+          <div class="panel">
+            <div class="panel-title">
+              <div class="panel-title-left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>About MultiCoreX System</span>
+              </div>
+            </div>
+
+            <div style="font-size:0.9rem; color:var(--text-muted); line-height:1.7;">
+              <p style="margin-bottom:1rem;">
+                <strong>MultiCoreX</strong> is an educational Operating Systems visualization and performance benchmarking software designed to demonstrate modern C++ multithreading, synchronization primitives, thread pools, and race conditions.
+              </p>
+              <h4 style="color:var(--text-main); margin:1.25rem 0 0.5rem 0;">Technical Stack Architecture:</h4>
+              <ul style="margin-left:1.5rem; margin-bottom:1rem;">
+                <li><strong>C++ Backend Engine:</strong> ISO C++17, compiled with Microsoft Visual Studio (MSVC) Optimizing Compiler.</li>
+                <li><strong>Multithreading Primitives:</strong> Standard C++ Thread Library (<code>std::thread</code>, <code>std::mutex</code>, <code>std::condition_variable</code>, <code>std::atomic</code>, <code>std::chrono</code>).</li>
+                <li><strong>HTTP Server & API Layer:</strong> Lightweight embedded <code>cpp-httplib</code> with <code>nlohmann/json</code> serializer.</li>
+                <li><strong>Interactive Frontend:</strong> HTML5, CSS3 Custom Properties (Vanilla CSS), Vanilla JavaScript ES6+, and Chart.js.</li>
+              </ul>
+
+              <h4 style="color:var(--text-main); margin:1.25rem 0 0.5rem 0;">REST API Endpoints Reference:</h4>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>Endpoint</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td><code>GET</code></td><td><code>/api/health</code></td><td>System health, detected hardware CPU cores, and thread status.</td></tr>
+                    <tr><td><code>GET</code></td><td><code>/api/dashboard</code></td><td>Aggregated execution metrics and thread pool counters.</td></tr>
+                    <tr><td><code>POST</code></td><td><code>/api/visualizer/run</code></td><td>Executes real workload with fine-grained per-thread timeline chunks.</td></tr>
+                    <tr><td><code>POST</code></td><td><code>/api/benchmark</code></td><td>Runs multi-thread comparison across [1, 2, 4, 8] threads with Speedup & Efficiency.</td></tr>
+                    <tr><td><code>POST</code></td><td><code>/api/race-condition</code></td><td>Executes shared counter race experiment (Unsynchronized vs Mutex vs Atomic).</td></tr>
+                    <tr><td><code>POST</code></td><td><code>/api/mutex-demo</code></td><td>Simulates thread lock contention and critical section timeline.</td></tr>
+                    <tr><td><code>GET</code></td><td><code>/api/pool/status</code></td><td>Retrieves thread pool workers status and task queue backlog.</td></tr>
+                    <tr><td><code>POST</code></td><td><code>/api/pool/submit</code></td><td>Submits tasks with priority into the thread-safe worker pool.</td></tr>
+                    <tr><td><code>POST</code></td><td><code>/api/pool/resize</code></td><td>Dynamically resizes active worker threads in the pool.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Application Logic Modules -->
+  <script src="js/charts.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/analyzer.js"></script>
+  <script src="js/race_lab.js"></script>
+  <script src="js/mutex_demo.js"></script>
+  <script src="js/thread_pool_ui.js"></script>
+  <script src="js/learning.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
